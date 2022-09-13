@@ -10,4 +10,5 @@ type EventDataBuilder struct {
 	SnsFacebook      string `csv:"団体のFacebookアカウント(任意)"`
 	SnsInstagram     string `csv:"団体のInstagramアカウント(任意)"`
 	SnsWebsite       string `csv:"団体のWebページ(任意)"`
+	ContactAddress   string `csv:"☆連絡用メールアドレス"`
 }

@@ -16,6 +16,7 @@ type EventData struct {
 	snsFacebook      string
 	snsInstagram     string
 	snsWebsite       string
+	contactAddress   string
 }
 
 type ValidationErrors struct {
@@ -46,6 +47,7 @@ func NewEventData(builder EventDataBuilder) *EventData {
 	newData.snsFacebook = builder.SnsFacebook
 	newData.snsInstagram = builder.SnsInstagram
 	newData.snsWebsite = builder.SnsWebsite
+	newData.contactAddress = builder.ContactAddress
 	return &newData
 }
 
