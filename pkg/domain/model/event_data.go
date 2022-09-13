@@ -1,5 +1,7 @@
 package model
 
+import "regexp"
+
 type EventData struct {
 	eventTitle       string
 	eventDescription string
@@ -55,6 +57,11 @@ func (e *EventData) Validate() {
 
 }
 
+func isPlainString(s string) bool {
+	res, _ := regexp.MatchString("^[A-Za-z0-9]+$", s)
+	return res
+}
+
 func (e *EventData) validateEventTitle() ValidationError {
 	return ValidationError{}
 }
@@ -76,15 +83,26 @@ func (e *EventData) validateOrgDescription() (string, Status) {
 }
 
 func (e *EventData) validateSnsTwitter() (string, Status) {
-	return "", OK
+	if isPlainString(e.snsTwitter) {
+		return "", OK
+	}
+	return "", Changed
 }
 
 func (e *EventData) validateSnsFacebook() (string, Status) {
+	if isPlainString(e.snsFacebook) {
+		return "", OK
+	}
 	return "", OK
 }
+
 func (e *EventData) validateSnsInstagram() (string, Status) {
+	if isPlainString(e.snsInstagram) {
+		return "", OK
+	}
 	return "", OK
 }
+
 func (e *EventData) validateSnsWebsite() (string, Status) {
 	return "", OK
 }
