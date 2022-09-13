@@ -58,7 +58,21 @@ func NewMultiEventData(builders []EventDataBuilder) []*EventData {
 }
 
 func (e *EventData) Validate() {
-
+	//_, s1 := e.validateEventTitle()
+	//_, s1 := e.validateEventDescription()
+	//_, s1 := e.validateEventGenreText()
+	//_, s1 := e.validateOrgName()
+	//_, s1 := e.validateOrgDescription()
+	//_, s1 := e.validateSnsTwitter()
+	//if s1 == NG {
+	//	fmt.Println(e.snsTwitter)
+	//}
+	//_, s1 := e.validateSnsInstagram()
+	//_, s1 := e.validateSnsFacebook()
+	_, s2 := e.validateSnsWebsite()
+	if s2 == NG {
+		fmt.Println(e.snsWebsite)
+	}
 }
 
 func validAsID(s string) string {
