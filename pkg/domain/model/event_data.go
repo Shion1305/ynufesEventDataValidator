@@ -29,10 +29,10 @@ type ValidationError struct {
 type Status string
 
 const (
-	OK       Status = "OK"
-	Changed  Status = "フォーマットの変更がされました"
-	Selected Status = "複数の候補から選択しました"
-	NG       Status = "不正な値です"
+	OK      Status = "OK"
+	Changed Status = "フォーマットの変更がされました"
+	Warning Status = "確認が必要な変更がされました"
+	NG      Status = "不正な値です"
 )
 
 func NewEventData(builder EventDataBuilder) *EventData {
@@ -61,13 +61,18 @@ func (e *EventData) Validate() {
 
 }
 
-func isPlainString(s string) bool {
-	res, _ := regexp.MatchString("^[A-Za-z0-9]+$", s)
-	return res
+func validAsID(s string) string {
+	re := regexp.MustCompile(`^@?([A-Za-z0-9_]+) *$`)
+	id := re.FindStringSubmatch(s)
+	if id == nil {
+		return ""
+	}
+	return id[0]
 }
 
-func (e *EventData) validateEventTitle() ValidationError {
-	return ValidationError{}
+func (e *EventData) validateEventTitle() (string, Status) {
+
+	return "", OK
 }
 
 func (e *EventData) validateEventDescription() (string, Status) {
@@ -87,25 +92,44 @@ func (e *EventData) validateOrgDescription() (string, Status) {
 }
 
 func (e *EventData) validateSnsTwitter() (string, Status) {
-	if isPlainString(e.snsTwitter) {
+	if e.snsTwitter == "" {
 		return "", OK
 	}
-	return "", Changed
+	if id := validAsID(e.snsTwitter); id != "" {
+		return id, OK
+	}
+	re := regexp.MustCompile("^https://twitter.com/([a-zA-Z0-9_]+)")
+	if id := re.FindStringSubmatch(e.snsTwitter); id != nil {
+		return id[0], Changed
+	}
+	return "", NG
 }
 
 func (e *EventData) validateSnsFacebook() (string, Status) {
-	if isPlainString(e.snsFacebook) {
+	if e.snsFacebook == "" {
 		return "", OK
 	}
-	return "", OK
+	if id := validAsID(e.snsFacebook); id != "" {
+		return id, OK
+	}
+	return "", NG
 }
 
 func (e *EventData) validateSnsInstagram() (string, Status) {
-	if isPlainString(e.snsInstagram) {
+	if e.snsInstagram == "" {
 		return "", OK
 	}
-	return "", OK
+	if id := validAsID(e.snsInstagram); id != "" {
+		return id, OK
+	}
+	return "", NG
 }
+
+//func (e *EventData) validateRequestInstagram() {
+//	resp, err := http.Get("https://www.instagram.com/usernamafawefwaefaefawefawe")
+//	fmt.Println(err)
+//	fmt.Println(resp)
+//}
 
 func (e *EventData) validateSnsWebsite() (string, Status) {
 	if e.snsWebsite == "" {
