@@ -43,6 +43,14 @@ func NewEventData(builder EventDataBuilder) *EventData {
 	return &newData
 }
 
+func NewMultiEventData(builders []EventDataBuilder) []*EventData {
+	var data []*EventData
+	for _, builder := range builders {
+		data = append(data, NewEventData(builder))
+	}
+	return data
+}
+
 func (e *EventData) Validate() {
 
 }
