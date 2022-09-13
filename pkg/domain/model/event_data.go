@@ -1,6 +1,10 @@
 package model
 
-import "regexp"
+import (
+	"fmt"
+	"net/http"
+	"regexp"
+)
 
 type EventData struct {
 	eventTitle       string
@@ -104,5 +108,28 @@ func (e *EventData) validateSnsInstagram() (string, Status) {
 }
 
 func (e *EventData) validateSnsWebsite() (string, Status) {
-	return "", OK
+	if e.snsWebsite == "" {
+		return "", OK
+	}
+	re := regexp.MustCompile("^(https?://[/.a-z0-9_-]+)$")
+	if match := re.FindStringSubmatch(e.snsWebsite); match != nil {
+		if accessTest(match[0]) {
+			return match[0], OK
+		} else {
+			return "", NG
+		}
+	}
+	return "", NG
+}
+
+func accessTest(url string) bool {
+	resp, err := http.Get(url)
+	if err != nil {
+		print(err)
+		return false
+	}
+	if resp.StatusCode > 300 {
+		return false
+	}
+	return true
 }
