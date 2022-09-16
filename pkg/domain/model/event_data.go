@@ -18,6 +18,7 @@ type EventData struct {
 	snsInstagram     verificationField
 	snsWebsite       verificationField
 	contactAddress   string
+	originalBuilder  *EventDataBuilder
 }
 
 type verificationField struct {
@@ -81,6 +82,7 @@ func NewEventData(builder EventDataBuilder) *EventData {
 	newData.snsInstagram.Value = builder.SnsInstagram
 	newData.snsWebsite.Value = builder.SnsWebsite
 	newData.contactAddress = builder.ContactAddress
+	newData.originalBuilder = &builder
 	return &newData
 }
 
