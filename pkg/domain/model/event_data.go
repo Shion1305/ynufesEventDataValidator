@@ -78,13 +78,20 @@ func NewEventData(builder EventDataBuilder) *EventData {
 	newData.eventGenre = EventGenre(builder.EventGenreText)
 	newData.orgName = builder.OrgName
 	newData.orgDescription = builder.OrgDescription
-	newData.snsTwitter.Value = builder.SnsTwitter
-	newData.snsFacebook.Value = builder.SnsFacebook
-	newData.snsInstagram.Value = builder.SnsInstagram
-	newData.snsWebsite.Value = builder.SnsWebsite
+	newData.snsTwitter = initVerificationField(builder.SnsTwitter)
+	newData.snsFacebook = initVerificationField(builder.SnsFacebook)
+	newData.snsInstagram = initVerificationField(builder.SnsInstagram)
+	newData.snsWebsite = initVerificationField(builder.SnsWebsite)
 	newData.contactAddress = builder.ContactAddress
 	newData.originalBuilder = &builder
 	return &newData
+}
+
+func initVerificationField(value string) verificationField {
+	var resp verificationField
+	resp.Value = value
+	resp.Verified = Unverified
+	return resp
 }
 
 func NewMultiEventData(builders []EventDataBuilder) []*EventData {
