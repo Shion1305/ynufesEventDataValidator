@@ -29,8 +29,9 @@ type verificationField struct {
 type VerificationStatus string
 
 const (
-	Verified VerificationStatus = "Verified"
-	Error    VerificationStatus = "Error"
+	Verified   VerificationStatus = "Verified"
+	Unverified VerificationStatus = "Unverified"
+	Error      VerificationStatus = "Error"
 )
 
 type EventField string
