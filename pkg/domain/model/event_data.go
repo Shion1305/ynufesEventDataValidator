@@ -24,6 +24,7 @@ type EventData struct {
 type verificationField struct {
 	Value    string
 	Verified VerificationStatus
+	Status   Status
 }
 
 type VerificationStatus string
