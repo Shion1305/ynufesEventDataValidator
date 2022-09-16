@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -29,6 +30,21 @@ type VerificationStatus string
 const (
 	Verified VerificationStatus = "Verified"
 	Error    VerificationStatus = "Error"
+)
+
+type EventField string
+
+const (
+	EventTitle       EventField = "eventTitle"
+	EventDescription EventField = "eventDescription"
+	EventGenreF      EventField = "eventGenre"
+	OrgName          EventField = "orgName"
+	OrgDescription   EventField = "orgDescription"
+	SnsTwitter       EventField = "snsTwitter"
+	SnsFacebook      EventField = "snsFacebook"
+	SnsInstagram     EventField = "snsInstagram"
+	SnsWebsite       EventField = "snsWebsite"
+	ContactAddress   EventField = "contactAddress"
 )
 
 type EventGenre string
@@ -74,6 +90,44 @@ func NewMultiEventData(builders []EventDataBuilder) []*EventData {
 		data = append(data, NewEventData(builder))
 	}
 	return data
+}
+
+func (p *EventData) UpdateField(field EventField, value string) error {
+	switch field {
+	case EventTitle:
+		p.eventTitle = value
+		break
+	case EventDescription:
+		p.eventDescription = value
+		break
+	case EventGenreF:
+		p.eventGenre = EventGenre(value)
+		break
+	case OrgName:
+		p.orgName = value
+		break
+	case OrgDescription:
+		p.orgDescription = value
+		break
+	case SnsTwitter:
+		p.snsTwitter.Value = value
+		break
+	case SnsFacebook:
+		p.snsFacebook.Value = value
+		break
+	case SnsInstagram:
+		p.snsInstagram.Value = value
+		break
+	case SnsWebsite:
+		p.snsWebsite.Value = value
+		break
+	case ContactAddress:
+		p.contactAddress = value
+		break
+	default:
+		return errors.New("unknown Field")
+	}
+	return nil
 }
 
 func (e *EventData) Validate() {
