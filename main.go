@@ -19,4 +19,5 @@ func main() {
 	for _, d := range eventDataSet {
 		d.Validate()
 	}
+	model.ValidateTwitter(eventDataSet)
 }
