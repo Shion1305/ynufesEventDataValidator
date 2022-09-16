@@ -60,9 +60,8 @@ func ValidateTwitter(data []*EventData) {
 	var targets []*EventData
 	//load entries
 	for _, d := range data {
-		id, status := d.ValidateSnsTwitter()
-		if status != NG && len(id) > 0 {
-			entries = append(entries, id)
+		if d.snsTwitter.Verified != Error && len(d.snsTwitter.Value) > 0 {
+			entries = append(entries, d.snsTwitter.Value)
 			targets = append(targets, d)
 		}
 	}

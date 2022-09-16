@@ -2,7 +2,6 @@ package model
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"regexp"
 )
@@ -34,6 +33,12 @@ const (
 	Unverified VerificationStatus = "Unverified"
 	Error      VerificationStatus = "Error"
 )
+
+func (e *verificationField) setVerificationField(value string, vStatus VerificationStatus, status Status) {
+	e.Value = value
+	e.Verified = vStatus
+	e.Status = status
+}
 
 type EventField string
 
@@ -147,10 +152,7 @@ func (e *EventData) Validate() {
 	//_, s1 := e.validateEventGenreText()
 	//_, s1 := e.validateOrgName()
 	//_, s1 := e.validateOrgDescription()
-	_, s1 := e.ValidateSnsTwitter()
-	if s1 == NG {
-		fmt.Println(e.snsTwitter)
-	}
+	e.ValidateSnsTwitter()
 	//_, s1 := e.validateSnsInstagram()
 	//_, s1 := e.validateSnsFacebook()
 	//_, s2 := e.validateSnsWebsite()
@@ -184,45 +186,53 @@ func validAsID(s string) string {
 //func (e *EventData) validateOrgName() (string, Status) {
 //	return "", OK
 //}
+//
+//func (e *EventData) validateOrgDescription() {
+//	return "", OK
+//}
 
-func (e *EventData) validateOrgDescription() (string, Status) {
-	return "", OK
-}
-
-func (e *EventData) ValidateSnsTwitter() (string, Status) {
+func (e *EventData) ValidateSnsTwitter() {
 	if e.snsTwitter.Value == "" {
-		return "", OK
+		e.snsTwitter.setVerificationField("", Unverified, OK)
+		return
 	}
 	if id := validAsID(e.snsTwitter.Value); id != "" {
-		return id, OK
+		e.snsTwitter.setVerificationField(id, Unverified, OK)
+		return
 	}
 	re := regexp.MustCompile("^https://twitter.com/([a-zA-Z0-9_]+)")
 	if id := re.FindStringSubmatch(e.snsTwitter.Value); id != nil {
 		if name := validAsID(id[0]); name != "" {
-			return name, Changed
+			e.snsTwitter.setVerificationField(name, Unverified, Changed)
+			return
 		}
 	}
-	return "", NG
+	e.snsTwitter.setVerificationField(e.snsTwitter.Value, Unverified, NG)
+	return
 }
 
-func (e *EventData) validateSnsFacebook() (string, Status) {
+func (e *EventData) validateSnsFacebook() {
 	if e.snsFacebook.Value == "" {
-		return "", OK
+		e.snsFacebook.setVerificationField("", Unverified, OK)
 	}
 	if id := validAsID(e.snsFacebook.Value); id != "" {
-		return id, OK
+		e.snsFacebook.setVerificationField(id, Unverified, OK)
+		return
 	}
-	return "", NG
+	e.snsFacebook.setVerificationField("", Unverified, NG)
+	return
 }
 
-func (e *EventData) validateSnsInstagram() (string, Status) {
+func (e *EventData) validateSnsInstagram() {
 	if e.snsInstagram.Value == "" {
-		return "", OK
+		e.snsInstagram.setVerificationField("", Unverified, OK)
+		return
 	}
 	if id := validAsID(e.snsInstagram.Value); id != "" {
-		return id, OK
+		e.snsInstagram.setVerificationField(id, Unverified, OK)
 	}
-	return "", NG
+	e.snsInstagram.setVerificationField("", Unverified, NG)
+	return
 }
 
 //func (e *EventData) validateRequestInstagram() {
@@ -231,19 +241,22 @@ func (e *EventData) validateSnsInstagram() (string, Status) {
 //	fmt.Println(resp)
 //}
 
-func (e *EventData) validateSnsWebsite() (string, Status) {
+func (e *EventData) validateSnsWebsite() {
 	if e.snsWebsite.Value == "" {
-		return "", OK
+		e.snsWebsite.setVerificationField("", Unverified, OK)
+		return
 	}
 	re := regexp.MustCompile("^(https?://[/.a-z0-9_-]+)$")
 	if match := re.FindStringSubmatch(e.snsWebsite.Value); match != nil {
 		if accessTest(match[0]) {
-			return match[0], OK
+			e.snsWebsite.setVerificationField(match[0], Verified, OK)
 		} else {
-			return "", NG
+			e.snsWebsite.setVerificationField(match[0], Error, OK)
 		}
+		return
 	}
-	return "", NG
+	e.snsWebsite.setVerificationField(e.snsWebsite.Value, Unverified, NG)
+	return
 }
 
 func accessTest(url string) bool {
