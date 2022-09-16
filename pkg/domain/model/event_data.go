@@ -9,7 +9,7 @@ import (
 type EventData struct {
 	eventTitle       string
 	eventDescription string
-	eventGenreText   string
+	eventGenre       EventGenre
 	orgName          string
 	orgDescription   string
 	snsTwitter       verificationField
@@ -57,7 +57,7 @@ func NewEventData(builder EventDataBuilder) *EventData {
 	var newData EventData
 	newData.eventTitle = builder.EventTitle
 	newData.eventDescription = builder.EventDescription
-	newData.eventGenreText = builder.EventGenreText
+	newData.eventGenre = EventGenre(builder.EventGenreText)
 	newData.orgName = builder.OrgName
 	newData.orgDescription = builder.OrgDescription
 	newData.snsTwitter.Value = builder.SnsTwitter
