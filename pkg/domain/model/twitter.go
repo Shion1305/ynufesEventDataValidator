@@ -2,7 +2,6 @@ package model
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	twitter "github.com/g8rswimmer/go-twitter/v2"
 	"log"
@@ -18,7 +17,12 @@ func (a authorize) Add(req *http.Request) {
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", a.Token))
 }
 
-func validateTwitter(names []string) {
+type TwitterInfo struct {
+	Name     string
+	Username string
+}
+
+func verifyTwitter(names []string) map[string]TwitterInfo {
 	fmt.Println("first", names[0])
 	client := &twitter.Client{
 		Authorizer: authorize{
@@ -40,23 +44,33 @@ func validateTwitter(names []string) {
 	}
 
 	dictionaries := userResponse.Raw.UserDictionaries()
-
-	enc, err := json.MarshalIndent(dictionaries, "", "    ")
-	if err != nil {
-		log.Panic(err)
+	var resp map[string]TwitterInfo
+	for _, d := range dictionaries {
+		var newInfo TwitterInfo
+		newInfo.Name = d.User.Name
+		newInfo.Username = d.User.UserName
+		resp[newInfo.Username] = newInfo
 	}
-	fmt.Println(string(enc))
+	//return list of verified accounts
+	return resp
 }
 
 func ValidateTwitter(data []*EventData) {
-	var usernames []string
-	fmt.Println("Usernames starts from here")
+	var entries []string
+	var targets []*EventData
+	//load entries
 	for _, d := range data {
 		id, status := d.ValidateSnsTwitter()
 		if status != NG && len(id) > 0 {
-			fmt.Println(id)
-			usernames = append(usernames, id)
+			entries = append(entries, id)
+			targets = append(targets, d)
 		}
 	}
-	validateTwitter(usernames)
+	//get list of verified accounts in entries
+	//accounts := verifyTwitter(entries)
+	//
+	//for _, d := range targets {
+	//
+	//
+	//}
 }
