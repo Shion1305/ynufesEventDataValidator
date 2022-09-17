@@ -61,15 +61,32 @@ func ValidateTwitter(data []*EventData) {
 	//load entries
 	for _, d := range data {
 		if d.snsTwitter.Verified != Error && len(d.snsTwitter.Value) > 0 {
+			fmt.Println(d.snsTwitter.Value)
 			entries = append(entries, d.snsTwitter.Value)
 			targets = append(targets, d)
 		}
 	}
 	//get list of verified accounts in entries
-	//accounts := verifyTwitter(entries)
-	//
-	//for _, d := range targets {
-	//
-	//
-	//}
+	accounts := verifyTwitter(entries)
+	var verifiedInfo []struct {
+		username string
+		name     string
+		orgName  string
+	}
+	for _, d := range targets {
+		ac, ok := accounts[d.snsTwitter.Value]
+		if ok {
+			d.snsTwitter.setVerification(Verified)
+			verifiedInfo = append(verifiedInfo, struct {
+				username string
+				name     string
+				orgName  string
+			}{username: ac.Username, name: ac.Name, orgName: d.orgName})
+		} else {
+			d.snsTwitter.setVerification(Error)
+		}
+	}
+	for _, s := range verifiedInfo {
+		fmt.Printf("%10s %30s %30s\n", s.username, s.name, s.orgName)
+	}
 }
