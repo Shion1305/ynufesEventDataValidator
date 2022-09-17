@@ -32,6 +32,7 @@ func checkPatches(data []*model.EventData) {
 			return err
 		}
 		if !info.IsDir() && re.MatchString(info.Name()) {
+			fmt.Printf("Patch detected: %s\n", path)
 			for _, patch := range model.ReadPatches(path) {
 				err := patch.ApplyPatch(data)
 				if err != nil {

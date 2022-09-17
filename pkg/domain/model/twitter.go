@@ -23,7 +23,6 @@ type TwitterInfo struct {
 }
 
 func verifyTwitter(names []string) map[string]TwitterInfo {
-	fmt.Println("first", names[0])
 	client := &twitter.Client{
 		Authorizer: authorize{
 			Token: os.Getenv("TwitterToken"),
@@ -87,6 +86,6 @@ func ValidateTwitter(data []*EventData) {
 		}
 	}
 	for _, s := range verifiedInfo {
-		fmt.Printf("%10s %30s %30s\n", s.username, s.name, s.orgName)
+		fmt.Printf("%20s %50s %50s\n", s.username, s.name, s.orgName)
 	}
 }
