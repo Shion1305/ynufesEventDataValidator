@@ -164,7 +164,7 @@ func (e *EventData) validate() {
 }
 
 func validAsID(s string) string {
-	re := regexp.MustCompile(`^@?(_?[A-Za-z0-9]+_?) *$`)
+	re := regexp.MustCompile(`^@?([A-Za-z0-9]*_?[A-Za-z0-9]*) *$`)
 	id := re.FindStringSubmatch(s)
 	if id == nil {
 		return ""
