@@ -90,6 +90,7 @@ func NewEventData(builder EventDataBuilder) *EventData {
 	newData.snsWebsite = initVerificationField(builder.SnsWebsite)
 	newData.contactAddress = builder.ContactAddress
 	newData.originalBuilder = &builder
+	newData.validate()
 	return &newData
 }
 
@@ -143,10 +144,11 @@ func (p *EventData) UpdateField(field EventField, value string) error {
 	default:
 		return errors.New("unknown Field")
 	}
+	e.validate()
 	return nil
 }
 
-func (e *EventData) Validate() {
+func (e *EventData) validate() {
 	//_, s1 := e.validateEventTitle()
 	//_, s1 := e.validateEventDescription()
 	//_, s1 := e.validateEventGenreText()
