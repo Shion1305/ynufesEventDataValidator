@@ -44,7 +44,7 @@ func verifyTwitter(names []string) map[string]TwitterInfo {
 	}
 
 	dictionaries := userResponse.Raw.UserDictionaries()
-	var resp map[string]TwitterInfo
+	var resp = make(map[string]TwitterInfo)
 	for _, d := range dictionaries {
 		var newInfo TwitterInfo
 		newInfo.Name = d.User.Name
@@ -60,7 +60,7 @@ func ValidateTwitter(data []*EventData) {
 	var targets []*EventData
 	//load entries
 	for _, d := range data {
-		if d.snsTwitter.Verified != Error && len(d.snsTwitter.Value) > 0 {
+		if d.snsTwitter.Status != NG && len(d.snsTwitter.Value) > 0 {
 			fmt.Println(d.snsTwitter.Value)
 			entries = append(entries, d.snsTwitter.Value)
 			targets = append(targets, d)
