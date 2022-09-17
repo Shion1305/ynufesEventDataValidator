@@ -34,10 +34,13 @@ const (
 	Error      VerificationStatus = "Error"
 )
 
-func (e *verificationField) setVerificationField(value string, vStatus VerificationStatus, status Status) {
-	e.Value = value
+func (e *verificationField) setVerification(vStatus VerificationStatus) {
 	e.Verified = vStatus
+}
+
+func (e *verificationField) setStatus(value string, status Status) {
 	e.Status = status
+	e.Value = value
 }
 
 type EventField string
@@ -109,37 +112,37 @@ func NewMultiEventData(builders []EventDataBuilder) []*EventData {
 	return data
 }
 
-func (p *EventData) UpdateField(field EventField, value string) error {
+func (e *EventData) UpdateField(field EventField, value string) error {
 	switch field {
 	case EventTitle:
-		p.eventTitle = value
+		e.eventTitle = value
 		break
 	case EventDescription:
-		p.eventDescription = value
+		e.eventDescription = value
 		break
 	case EventGenreF:
-		p.eventGenre = EventGenre(value)
+		e.eventGenre = EventGenre(value)
 		break
 	case OrgName:
-		p.orgName = value
+		e.orgName = value
 		break
 	case OrgDescription:
-		p.orgDescription = value
+		e.orgDescription = value
 		break
 	case SnsTwitter:
-		p.snsTwitter.Value = value
+		e.snsTwitter.Value = value
 		break
 	case SnsFacebook:
-		p.snsFacebook.Value = value
+		e.snsFacebook.Value = value
 		break
 	case SnsInstagram:
-		p.snsInstagram.Value = value
+		e.snsInstagram.Value = value
 		break
 	case SnsWebsite:
-		p.snsWebsite.Value = value
+		e.snsWebsite.Value = value
 		break
 	case ContactAddress:
-		p.contactAddress = value
+		e.contactAddress = value
 		break
 	default:
 		return errors.New("unknown Field")
@@ -195,45 +198,45 @@ func validAsID(s string) string {
 
 func (e *EventData) ValidateSnsTwitter() {
 	if e.snsTwitter.Value == "" {
-		e.snsTwitter.setVerificationField("", Unverified, OK)
+		e.snsTwitter.setStatus("", OK)
 		return
 	}
 	if id := validAsID(e.snsTwitter.Value); id != "" {
-		e.snsTwitter.setVerificationField(id, Unverified, OK)
+		e.snsTwitter.setStatus(id, OK)
 		return
 	}
 	re := regexp.MustCompile("^https://twitter.com/([A-Za-z0-9]*_?[A-Za-z0-9]*)")
 	if id := re.FindStringSubmatch(e.snsTwitter.Value); id != nil {
 		if name := validAsID(id[1]); name != "" {
-			e.snsTwitter.setVerificationField(name, Unverified, Changed)
+			e.snsTwitter.setStatus(name, Changed)
 			return
 		}
 	}
-	e.snsTwitter.setVerificationField(e.snsTwitter.Value, Unverified, NG)
+	e.snsTwitter.setStatus(e.snsTwitter.Value, NG)
 	return
 }
 
 func (e *EventData) validateSnsFacebook() {
 	if e.snsFacebook.Value == "" {
-		e.snsFacebook.setVerificationField("", Unverified, OK)
+		e.snsFacebook.setStatus("", OK)
 	}
 	if id := validAsID(e.snsFacebook.Value); id != "" {
-		e.snsFacebook.setVerificationField(id, Unverified, OK)
+		e.snsFacebook.setStatus(id, OK)
 		return
 	}
-	e.snsFacebook.setVerificationField("", Unverified, NG)
+	e.snsFacebook.setStatus("", NG)
 	return
 }
 
 func (e *EventData) validateSnsInstagram() {
 	if e.snsInstagram.Value == "" {
-		e.snsInstagram.setVerificationField("", Unverified, OK)
+		e.snsInstagram.setStatus("", OK)
 		return
 	}
 	if id := validAsID(e.snsInstagram.Value); id != "" {
-		e.snsInstagram.setVerificationField(id, Unverified, OK)
+		e.snsInstagram.setStatus(id, OK)
 	}
-	e.snsInstagram.setVerificationField("", Unverified, NG)
+	e.snsInstagram.setStatus("", NG)
 	return
 }
 
@@ -245,19 +248,21 @@ func (e *EventData) validateSnsInstagram() {
 
 func (e *EventData) validateSnsWebsite() {
 	if e.snsWebsite.Value == "" {
-		e.snsWebsite.setVerificationField("", Unverified, OK)
+		e.snsWebsite.setStatus("", OK)
 		return
 	}
 	re := regexp.MustCompile("^(https?://[/.a-z0-9_-]+)$")
 	if match := re.FindStringSubmatch(e.snsWebsite.Value); match != nil {
 		if accessTest(match[0]) {
-			e.snsWebsite.setVerificationField(match[0], Verified, OK)
+			e.snsWebsite.setStatus(match[0], OK)
+			e.snsWebsite.setVerification(Verified)
 		} else {
-			e.snsWebsite.setVerificationField(match[0], Error, OK)
+			e.snsWebsite.setStatus(match[0], OK)
+			e.snsWebsite.setVerification(Error)
 		}
 		return
 	}
-	e.snsWebsite.setVerificationField(e.snsWebsite.Value, Unverified, NG)
+	e.snsWebsite.setStatus(e.snsWebsite.Value, NG)
 	return
 }
 
