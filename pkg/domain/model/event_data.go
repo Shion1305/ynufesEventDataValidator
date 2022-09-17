@@ -204,7 +204,7 @@ func (e *EventData) ValidateSnsTwitter() {
 	}
 	re := regexp.MustCompile("^https://twitter.com/([a-zA-Z0-9_]+)")
 	if id := re.FindStringSubmatch(e.snsTwitter.Value); id != nil {
-		if name := validAsID(id[0]); name != "" {
+		if name := validAsID(id[1]); name != "" {
 			e.snsTwitter.setVerificationField(name, Unverified, Changed)
 			return
 		}
