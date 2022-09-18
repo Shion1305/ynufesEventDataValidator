@@ -7,6 +7,7 @@ import (
 )
 
 type EventData struct {
+	originOrg        string
 	eventTitle       string
 	eventDescription string
 	eventGenre       EventGenre
@@ -82,6 +83,7 @@ const (
 
 func NewEventData(builder EventDataBuilder) *EventData {
 	var newData EventData
+	newData.originOrg = builder.OriginOrg
 	newData.eventTitle = builder.EventTitle
 	newData.eventDescription = builder.EventDescription
 	newData.eventGenre = EventGenre(builder.EventGenreText)
@@ -276,4 +278,8 @@ func accessTest(url string) bool {
 		return false
 	}
 	return true
+}
+
+func PrintError() {
+
 }

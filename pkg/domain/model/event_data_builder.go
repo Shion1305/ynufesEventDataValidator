@@ -1,6 +1,7 @@
 package model
 
 type EventDataBuilder struct {
+	OriginOrg        string `csv:"☆母団体名"`
 	EventTitle       string `csv:"☆出展名"`
 	EventDescription string `csv:"企画説明文(字数制限なし)"`
 	EventGenreText   string `csv:"企画のジャンル"`
