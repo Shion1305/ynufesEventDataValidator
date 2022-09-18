@@ -7,8 +7,8 @@ import (
 
 type ID string
 
-func genID(value string) string {
+func genID(value string) ID {
 	b := []byte(value)
 	sum := md5.Sum(b)
-	return hex.EncodeToString(sum[:])
+	return ID(hex.EncodeToString(sum[:]))
 }
