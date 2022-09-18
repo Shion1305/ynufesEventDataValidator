@@ -279,7 +279,3 @@ func accessTest(url string) bool {
 	}
 	return true
 }
-
-func PrintError() {
-
-}

@@ -22,6 +22,9 @@ func main() {
 	eventDataSet := model.NewMultiEventData(builders)
 	checkPatches(eventDataSet)
 	model.ValidateTwitter(eventDataSet)
+	for _, e := range eventDataSet {
+		model.PrintError(e)
+	}
 }
 
 func checkPatches(data []*model.EventData) {
