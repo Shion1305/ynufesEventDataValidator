@@ -20,10 +20,12 @@ func main() {
 		panic(err)
 	}
 	eventDataSet := model.NewMultiEventData(builders)
-	checkPatches(eventDataSet)
-	model.ValidateTwitter(eventDataSet)
+	//checkPatches(eventDataSet)
+	////model.ValidateTwitter(eventDataSet)
+	drive := model.InitGD()
 	for _, e := range eventDataSet {
-		model.PrintError(e)
+		//model.PrintError(e)
+		model.TestGD(drive, *e)
 	}
 }
 

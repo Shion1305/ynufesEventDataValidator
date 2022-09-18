@@ -87,7 +87,7 @@ func NewEventData(builder EventDataBuilder) *EventData {
 	var newData EventData
 	newData.originOrg = builder.OriginOrg
 	newData.eventIdMD5 = genID(builder.OriginOrg)
-	newData.iconDataId = builder.IconDataId
+	newData.iconDataId = getIconId(builder.IconDataId)
 	newData.eventTitle = builder.EventTitle
 	newData.eventDescription = builder.EventDescription
 	newData.eventGenre = EventGenre(builder.EventGenreText)
