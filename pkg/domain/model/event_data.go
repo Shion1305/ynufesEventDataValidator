@@ -8,6 +8,7 @@ import (
 
 type EventData struct {
 	originOrg        string
+	iconDataId       string
 	eventTitle       string
 	eventDescription string
 	eventGenre       EventGenre
@@ -84,6 +85,7 @@ const (
 func NewEventData(builder EventDataBuilder) *EventData {
 	var newData EventData
 	newData.originOrg = builder.OriginOrg
+	newData.iconDataId = builder.IconDataId
 	newData.eventTitle = builder.EventTitle
 	newData.eventDescription = builder.EventDescription
 	newData.eventGenre = EventGenre(builder.EventGenreText)
