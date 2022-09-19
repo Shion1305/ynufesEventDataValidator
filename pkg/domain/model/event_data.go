@@ -345,8 +345,7 @@ func accessTest(url string) bool {
 	return true
 }
 
-// WEB用のExporter
-// 必要のないデータは含まない
+// ExportEventData WEB用のExporter 必要のないデータは含まない
 type ExportEventData struct {
 	EventIdMD5       string `json:"event_id"`
 	EventTitle       string `json:"event_title"`
