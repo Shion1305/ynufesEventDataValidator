@@ -56,6 +56,20 @@ func (e *verificationField) getSafeValue() string {
 	return ""
 }
 
+func (e *verificationField) getCheckString() string {
+	if e.OriginValue == "" {
+		return "(設定なし)"
+	}
+	if e.Status != NG && e.Verified == Verified {
+		return e.Value + " (確認済み)"
+	}
+	if e.Status != NG && e.Verified == Unverified {
+		return e.Value + " (未確認)"
+	}
+	return "(エラー・設定なし 無効な入力: " + e.OriginValue + ")"
+
+}
+
 type EventField string
 
 const (
@@ -353,5 +367,42 @@ func (e *EventData) Export() ExportEventData {
 		SnsFacebook:       e.snsFacebook.getSafeValue(),
 		SnsInstagram:      e.snsInstagram.getSafeValue(),
 		SnsWebsite:        e.snsWebsite.getSafeValue(),
+	}
+}
+
+type CheckEventData struct {
+	OriginOrg         string `csv:"OriginOrg"`
+	ContactAddress    string `csv:"ContactAddress"`
+	Url               string `csv:"Url"`
+	EventTitle        string `csv:"eventTitle"`
+	EventSummary      string `csv:"eventSummary"`
+	EventDescription  string `csv:"eventDescription"`
+	EventDescriptionP string `csv:"eventDescriptionP"`
+	EventGenreText    string `csv:"eventGenreText"`
+	OrgName           string `csv:"orgName"`
+	OrgDescription    string `csv:"orgDescription"`
+	SnsTwitter        string `csv:"snsTwitter"`
+	SnsFacebook       string `csv:"snsFacebook"`
+	SnsInstagram      string `csv:"snsInstagram"`
+	SnsWebsite        string `csv:"snsWebsite"`
+	ImageComment      string `csv:"imageComment"`
+}
+
+func (e *EventData) ExportCheck() *CheckEventData {
+	return &CheckEventData{
+		OriginOrg:         e.originOrg,
+		ContactAddress:    e.contactAddress,
+		Url:               "https://tokiwa22.ynu-fes.yokohama/preview/event-detail/" + string(e.eventIdMD5),
+		EventTitle:        e.eventTitle,
+		EventSummary:      e.eventSummary,
+		EventDescription:  e.eventDescription,
+		EventDescriptionP: e.eventDescriptionP,
+		EventGenreText:    string(e.eventGenre),
+		OrgName:           e.orgName,
+		OrgDescription:    e.orgDescription,
+		SnsTwitter:        e.snsTwitter.getCheckString(),
+		SnsFacebook:       e.snsFacebook.getCheckString(),
+		SnsInstagram:      e.snsInstagram.getCheckString(),
+		SnsWebsite:        e.snsWebsite.getCheckString(),
 	}
 }
