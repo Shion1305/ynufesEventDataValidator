@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"github.com/gnue/go-disp_width"
 	"net/http"
 	"regexp"
 )
@@ -251,6 +252,11 @@ func validAsID(s string) string {
 //func (e *EventData) validateOrgDescription() {
 //	return "", OK
 //}
+
+func (e *EventData) ValidateDescriptionP() bool {
+	//limit EventDescriptionP visual text length to 60(with half size character)
+	return disp_width.Measure(e.eventDescriptionP) <= 60
+}
 
 func (e *EventData) ValidateSnsTwitter() {
 	if e.snsTwitter.Value == "" {
