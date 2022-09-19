@@ -46,6 +46,13 @@ func (e *verificationField) setStatus(value string, status Status) {
 	e.Value = value
 }
 
+func (e *verificationField) getSafeValue() string {
+	if e.Status != NG && e.Verified == Verified {
+		return e.Value
+	}
+	return ""
+}
+
 type EventField string
 
 const (
@@ -305,4 +312,34 @@ func accessTest(url string) bool {
 		return false
 	}
 	return true
+}
+
+type EventEventData struct {
+	OriginOrg        string `json:"originOrg"`
+	EventIdMD5       string `json:"id"`
+	EventTitle       string `json:"eventTitle"`
+	EventDescription string `json:"eventDescription"`
+	EventGenreId     int    `json:"eventGenreId"`
+	OrgName          string `json:"orgName"`
+	OrgDescription   string `json:"orgDescription"`
+	SnsTwitter       string `json:"snsTwitter"`
+	SnsFacebook      string `json:"snsFacebook"`
+	SnsInstagram     string `json:"snsInstagram"`
+	SnsWebsite       string `json:"snsWebsite"`
+}
+
+func (e *EventData) Export() EventEventData {
+	return EventEventData{
+		OriginOrg:        e.originOrg,
+		EventIdMD5:       string(e.eventIdMD5),
+		EventTitle:       e.eventTitle,
+		EventDescription: e.eventDescription,
+		EventGenreId:     e.eventGenre.getEventGenreId(),
+		OrgName:          e.orgName,
+		OrgDescription:   e.orgDescription,
+		SnsTwitter:       e.snsTwitter.getSafeValue(),
+		SnsFacebook:      e.snsFacebook.getSafeValue(),
+		SnsInstagram:     e.snsInstagram.getSafeValue(),
+		SnsWebsite:       e.snsWebsite.getSafeValue(),
+	}
 }
