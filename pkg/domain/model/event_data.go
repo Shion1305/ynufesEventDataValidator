@@ -7,20 +7,22 @@ import (
 )
 
 type EventData struct {
-	originOrg        string
-	eventIdMD5       ID
-	iconDataId       string
-	eventTitle       string
-	eventDescription string
-	eventGenre       EventGenre
-	orgName          string
-	orgDescription   string
-	snsTwitter       verificationField
-	snsFacebook      verificationField
-	snsInstagram     verificationField
-	snsWebsite       verificationField
-	contactAddress   string
-	originalBuilder  *EventDataBuilder
+	originOrg         string
+	eventIdMD5        ID
+	iconDataId        string
+	eventTitle        string
+	eventSummary      string
+	eventDescription  string
+	eventDescriptionP string
+	eventGenre        EventGenre
+	orgName           string
+	orgDescription    string
+	snsTwitter        verificationField
+	snsFacebook       verificationField
+	snsInstagram      verificationField
+	snsWebsite        verificationField
+	contactAddress    string
+	originalBuilder   *EventDataBuilder
 }
 
 type verificationField struct {
@@ -120,7 +122,9 @@ func NewEventData(builder EventDataBuilder) *EventData {
 	newData.eventIdMD5 = genID(builder.OriginOrg)
 	newData.iconDataId = getIconId(builder.IconDataId)
 	newData.eventTitle = builder.EventTitle
+	newData.eventSummary = builder.EventSummary
 	newData.eventDescription = builder.EventDescription
+	newData.eventDescriptionP = builder.EventDescriptionP
 	newData.eventGenre = EventGenre(builder.EventGenreText)
 	newData.orgName = builder.OrgName
 	newData.orgDescription = builder.OrgDescription
