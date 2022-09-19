@@ -2,8 +2,14 @@ package model
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"github.com/nickalie/go-webpbin"
+	"golang.org/x/image/draw"
 	"google.golang.org/api/drive/v3"
+	"image"
+	_ "image/jpeg"
+	_ "image/png"
 	"io"
 	"log"
 	"os"
@@ -35,31 +41,86 @@ func InitGD() *drive.Service {
 }
 
 func TestGD(service *drive.Service, e EventData) {
-	if e.iconDataId == "" {
+	path := download(service, e)
+	if path == "" {
 		return
+	}
+
+	path1 := "webps/" + string(e.eventIdMD5) + "." + "webp"
+	source, err := os.Open(path)
+	if err != nil {
+		fmt.Printf("failed to reopen source: %s\n", err)
+		fmt.Println(path)
+		return
+	}
+	defer source.Close()
+
+	img, _, err := image.Decode(source)
+	if err != nil {
+		fmt.Printf("failed to decode image: %s\n", err)
+		return
+	}
+	if img, err = checkImageSize(img); err != nil {
+		fmt.Printf("image requirement not met: %s\n", err)
+		return
+	}
+	output1, err := os.Create(path1)
+	if err != nil {
+		fmt.Printf("error: %s\n", err)
+		return
+	}
+	defer output1.Close()
+
+	if err := webpbin.Encode(output1, img); err != nil {
+		fmt.Printf("writing webp: %s\n", err)
+		return
+	}
+	return
+}
+
+func download(service *drive.Service, e EventData) string {
+	if e.iconDataId == "" {
+		return ""
 	}
 	f, err := service.Files.Get(e.iconDataId).Do()
 	if err == nil {
 		fmt.Println(f.MimeType)
 	}
+	var extension string
+	switch f.MimeType {
+	case "image/png":
+		extension = "png"
+		break
+	case "image/jpeg":
+		extension = "jpeg"
+		break
+	case "image/heic":
+		extension = "heic"
+		break
+	default:
+		fmt.Printf("MIME ERROR: %s\n", f.MimeType)
+		return ""
+	}
 	resp, err := service.Files.Get(e.iconDataId).Download()
 	if err != nil {
 		fmt.Println("get drive file: %w", err)
 		fmt.Println(e.iconDataId)
-		return
+		return ""
 	}
 	defer resp.Body.Close()
-	path := "icons/" + string(e.eventIdMD5) + ".jpeg"
-	fmt.Println(path)
+	path := "icons/" + string(e.eventIdMD5) + "." + extension
 	output, err := os.Create(path)
 	defer output.Close()
-
-	if _, err := io.Copy(output, resp.Body); err != nil {
-		fmt.Println("write file: %w", err)
-		return
+	if err != nil {
+		fmt.Printf("error: %s\n", err)
+		return ""
 	}
 
-	return
+	if _, err := io.Copy(output, resp.Body); err != nil {
+		fmt.Println("copying downloaded data: %w", err)
+		return ""
+	}
+	return path
 }
 
 func checkImageSize(target image.Image) (image.Image, error) {
