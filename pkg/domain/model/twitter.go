@@ -31,11 +31,7 @@ func verifyTwitter(names []string) map[string]TwitterInfo {
 		Client: http.DefaultClient,
 		Host:   "https://api.twitter.com",
 	}
-	opts := twitter.UserLookupOpts{
-		Expansions: []twitter.Expansion{twitter.ExpansionPinnedTweetID},
-	}
-
-	fmt.Println("Callout to user lookup callout")
+	opts := twitter.UserLookupOpts{}
 
 	userResponse, err := client.UserNameLookup(context.Background(), names, opts)
 	print(names)
