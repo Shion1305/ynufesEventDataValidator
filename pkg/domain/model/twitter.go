@@ -34,7 +34,6 @@ func verifyTwitter(names []string) map[string]TwitterInfo {
 	opts := twitter.UserLookupOpts{}
 
 	userResponse, err := client.UserNameLookup(context.Background(), names, opts)
-	print(names)
 	if err != nil {
 		log.Panicf("user lookup error: %v", err)
 	}

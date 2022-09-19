@@ -25,7 +25,6 @@ func getIconId(url string) string {
 		fmt.Println("Regex Error: ", url)
 		return ""
 	}
-	fmt.Println(res)
 	return res[1]
 }
 
@@ -82,9 +81,6 @@ func download(service *drive.Service, e EventData) string {
 		return ""
 	}
 	f, err := service.Files.Get(e.iconDataId).Do()
-	if err == nil {
-		fmt.Println(f.MimeType)
-	}
 	var extension string
 	switch f.MimeType {
 	case "image/png":
