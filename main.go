@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gocarina/gocsv"
 	"io/fs"
@@ -29,6 +30,20 @@ func main() {
 	}
 }
 
+func exportJson(data []*model.EventData) error {
+	out, err := os.Create("source.json")
+	if err != nil {
+		return fmt.Errorf("error opening source: %w\n", err)
+	}
+	var exports []model.ExportEventData
+	for _, d := range data {
+		exports = append(exports, d.Export())
+	}
+	byteData, _ := json.Marshal(exports)
+	_, err = out.Write(byteData)
+	return err
+}
+
 func checkPatches(data []*model.EventData) {
 	re := regexp.MustCompile("^patch-\\d{2}\\.json$")
 	filepath.Walk("./", func(path string, info fs.FileInfo, err error) error {
@@ -47,4 +62,19 @@ func checkPatches(data []*model.EventData) {
 		}
 		return nil
 	})
+}
+
+func exportCSV(data []*model.EventData) {
+	var checks []*model.CheckEventData
+	for _, d := range data {
+		checks = append(checks, d.ExportCheck())
+	}
+
+	file, err := os.Create("out.csv")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer file.Close()
+	gocsv.MarshalFile(&checks, file)
 }
