@@ -262,8 +262,10 @@ func (e *EventData) validateSnsFacebook() {
 	if e.snsFacebook.Value == "" {
 		e.snsFacebook.setStatus("", OK)
 	}
-	if id := validAsID(e.snsFacebook.Value); id != "" {
-		e.snsFacebook.setStatus(id, OK)
+	re := regexp.MustCompile("^@?([A-Z.a-z0-9]{5,})$")
+	check := re.FindStringSubmatch(e.snsFacebook.Value)
+	if check != nil && check[1] != "" {
+		e.snsFacebook.setStatus(check[1], OK)
 		return
 	}
 	e.snsFacebook.setStatus("", NG)
@@ -275,8 +277,11 @@ func (e *EventData) validateSnsInstagram() {
 		e.snsInstagram.setStatus("", OK)
 		return
 	}
-	if id := validAsID(e.snsInstagram.Value); id != "" {
-		e.snsInstagram.setStatus(id, OK)
+	re := regexp.MustCompile("^@?([A-Z.a-z0-9_]+)$")
+	check := re.FindStringSubmatch(e.snsInstagram.Value)
+	if check != nil && check[1] != "" {
+		e.snsInstagram.setStatus(check[1], OK)
+		return
 	}
 	e.snsInstagram.setStatus("", NG)
 	return
