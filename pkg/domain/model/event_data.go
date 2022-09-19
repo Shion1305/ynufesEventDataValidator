@@ -24,9 +24,10 @@ type EventData struct {
 }
 
 type verificationField struct {
-	Value    string
-	Verified VerificationStatus
-	Status   Status
+	Value       string
+	OriginValue string
+	Verified    VerificationStatus
+	Status      Status
 }
 
 type VerificationStatus string
@@ -135,6 +136,7 @@ func NewEventData(builder EventDataBuilder) *EventData {
 
 func initVerificationField(value string) verificationField {
 	var resp verificationField
+	resp.OriginValue = value
 	resp.Value = value
 	resp.Verified = Unverified
 	return resp
