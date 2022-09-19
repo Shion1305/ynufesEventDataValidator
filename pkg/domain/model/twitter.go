@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type authorize struct {
@@ -48,7 +49,7 @@ func verifyTwitter(names []string) map[string]TwitterInfo {
 		var newInfo TwitterInfo
 		newInfo.Name = d.User.Name
 		newInfo.Username = d.User.UserName
-		resp[newInfo.Username] = newInfo
+		resp[strings.ToUpper(newInfo.Username)] = newInfo
 	}
 	//return list of verified accounts
 	return resp
@@ -73,8 +74,9 @@ func ValidateTwitter(data []*EventData) {
 		orgName  string
 	}
 	for _, d := range targets {
-		ac, ok := accounts[d.snsTwitter.Value]
+		ac, ok := accounts[strings.ToUpper(d.snsTwitter.Value)]
 		if ok {
+			d.snsTwitter.Value = ac.Username
 			d.snsTwitter.setVerification(Verified)
 			verifiedInfo = append(verifiedInfo, struct {
 				username string
