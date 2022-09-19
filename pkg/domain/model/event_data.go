@@ -74,6 +74,29 @@ const (
 	RiceDish         EventGenre = "ご飯もの"
 )
 
+func (genre EventGenre) getEventGenreId() int {
+	switch genre {
+	case Exhibition:
+		return 1
+	case Performance:
+		return 2
+	case GameSports:
+		return 3
+	case Dessert:
+		return 4
+	case NoodleTeppanyaki:
+		return 5
+	case FastFood:
+		return 6
+	case Drink:
+		return 7
+	case RiceDish:
+		return 8
+	default:
+		return 0
+	}
+}
+
 type Status string
 
 const (
