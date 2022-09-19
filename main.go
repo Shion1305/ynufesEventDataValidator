@@ -22,9 +22,15 @@ func main() {
 	}
 	eventDataSet := model.NewMultiEventData(builders)
 	//checkPatches(eventDataSet)
-	////model.ValidateTwitter(eventDataSet)
+	model.ValidateTwitter(eventDataSet)
+	processIcons(eventDataSet)
+	exportCSV(eventDataSet)
+	exportJson(eventDataSet)
+}
+
+func processIcons(data []*model.EventData) {
 	drive := model.InitGD()
-	for _, e := range eventDataSet {
+	for _, e := range data {
 		//model.PrintError(e)
 		model.TestGD(drive, *e)
 	}
