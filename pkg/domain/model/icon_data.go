@@ -124,7 +124,6 @@ func download(service *drive.Service, e EventData) string {
 
 func checkImageSize(target image.Image) (image.Image, error) {
 	var err error
-	resizeTo := 500
 	bounds := target.Bounds()
 	w := bounds.Dx()
 	h := bounds.Dy()
@@ -132,15 +131,10 @@ func checkImageSize(target image.Image) (image.Image, error) {
 		return target, nil
 	}
 	if w != h {
-		err = fmt.Errorf("画像が正方形ではありません。(%d,%d)", w, h)
+		err = fmt.Errorf("画像が正方形ではありませんでした。画像サイズの変更を行いました。(%d,%d)", w, h)
 		fmt.Println(err)
-		if w > h {
-			resizeTo = w
-		} else {
-			resizeTo = h
-		}
 	}
-	imgData := image.NewRGBA(image.Rect(0, 0, resizeTo, resizeTo))
+	imgData := image.NewRGBA(image.Rect(0, 0, 500, 500))
 	draw.CatmullRom.Scale(imgData, imgData.Bounds(), target, target.Bounds(), draw.Over, nil)
 	return imgData, err
 }
