@@ -92,6 +92,9 @@ func download(service *drive.Service, e EventData) string {
 	case "image/heic":
 		extension = "heic"
 		break
+	case "image/heif":
+		extension = "heif"
+		break
 	default:
 		fmt.Printf("MIME ERROR: %s\n", f.MimeType)
 		return ""
