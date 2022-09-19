@@ -61,3 +61,18 @@ func TestGD(service *drive.Service, e EventData) {
 
 	return
 }
+
+func checkImageSize(target image.Image) (image.Image, error) {
+	bounds := target.Bounds()
+	w := bounds.Dx()
+	h := bounds.Dy()
+	if w != h {
+		return nil, errors.New("画像が正方形ではありません。")
+	}
+	if w <= 500 {
+		return target, nil
+	}
+	imgData := image.NewRGBA(image.Rect(0, 0, w, w))
+	draw.CatmullRom.Scale(imgData, imgData.Bounds(), target, target.Bounds(), draw.Over, nil)
+	return imgData, nil
+}
