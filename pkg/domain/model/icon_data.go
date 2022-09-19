@@ -2,7 +2,6 @@ package model
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/nickalie/go-webpbin"
 	"golang.org/x/image/draw"
@@ -124,16 +123,24 @@ func download(service *drive.Service, e EventData) string {
 }
 
 func checkImageSize(target image.Image) (image.Image, error) {
+	var err error
+	resizeTo := 500
 	bounds := target.Bounds()
 	w := bounds.Dx()
 	h := bounds.Dy()
-	if w != h {
-		return nil, errors.New("画像が正方形ではありません。")
-	}
-	if w <= 500 {
+	if w == h && w <= 500 {
 		return target, nil
 	}
-	imgData := image.NewRGBA(image.Rect(0, 0, w, w))
+	if w != h {
+		err = fmt.Errorf("画像が正方形ではありません。(%d,%d)", w, h)
+		fmt.Println(err)
+		if w > h {
+			resizeTo = w
+		} else {
+			resizeTo = h
+		}
+	}
+	imgData := image.NewRGBA(image.Rect(0, 0, resizeTo, resizeTo))
 	draw.CatmullRom.Scale(imgData, imgData.Bounds(), target, target.Bounds(), draw.Over, nil)
-	return imgData, nil
+	return imgData, err
 }
