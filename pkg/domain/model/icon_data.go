@@ -8,11 +8,13 @@ import (
 	"google.golang.org/api/drive/v3"
 	"image"
 	_ "image/jpeg"
+	"image/png"
 	_ "image/png"
 	"io"
 	"log"
 	"os"
 	"regexp"
+	"strings"
 )
 
 func getIconId(url string) string {
@@ -44,6 +46,17 @@ func ProcessGD(service *drive.Service, e *EventData) {
 		return
 	}
 
+	filename := e.eventOrgName
+	filename = strings.Replace(filename, "<", "-", -1)
+	filename = strings.Replace(filename, ">", "-", -1)
+	filename = strings.Replace(filename, " ", "_", -1)
+	filename = strings.Replace(filename, "?", "_", -1)
+	filename = strings.Replace(filename, "\"", "-", -1)
+	filename = strings.Replace(filename, "*", "-", -1)
+	filename = strings.Replace(filename, "|", "-", -1)
+	filename = strings.Replace(filename, "/", "-", -1)
+	filename = strings.Replace(filename, ":", "_", -1)
+	path0 := "icons/" + filename + "." + "png"
 	path1 := "webps/" + string(e.eventIdMD5) + "." + "webp"
 	source, err := os.Open(path)
 	if err != nil {
@@ -66,6 +79,14 @@ func ProcessGD(service *drive.Service, e *EventData) {
 		}
 		e.ImgStatus = err.Error()
 	}
+
+	output0, err := os.Create(path0)
+	if err != nil {
+		fmt.Printf("error: %s\n", err)
+		return
+	}
+	defer output0.Close()
+
 	output1, err := os.Create(path1)
 	if err != nil {
 		fmt.Printf("error: %s\n", err)
@@ -73,6 +94,10 @@ func ProcessGD(service *drive.Service, e *EventData) {
 	}
 	defer output1.Close()
 
+	if err := png.Encode(output0, img); err != nil {
+		fmt.Printf("writing png: %s\n", err)
+		return
+	}
 	if err := webpbin.Encode(output1, img); err != nil {
 		fmt.Printf("writing webp: %s\n", err)
 		return
@@ -113,7 +138,7 @@ func download(service *drive.Service, e EventData) string {
 		return ""
 	}
 	defer resp.Body.Close()
-	path := "icons/" + string(e.eventIdMD5) + "." + extension
+	path := "icons-original/" + string(e.eventIdMD5) + "." + extension
 	output, err := os.Create(path)
 	defer output.Close()
 	if err != nil {
