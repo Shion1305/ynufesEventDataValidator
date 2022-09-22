@@ -38,7 +38,7 @@ func InitGD() *drive.Service {
 	return d
 }
 
-func TestGD(service *drive.Service, e EventData) {
+func ProcessGD(service *drive.Service, e EventData) {
 	path := download(service, e)
 	if path == "" {
 		return
