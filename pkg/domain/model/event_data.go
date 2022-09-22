@@ -26,6 +26,7 @@ type EventData struct {
 	snsWebsite        verificationField
 	contactAddress    string
 	originalBuilder   *EventDataBuilder
+	ImgStatus         string
 }
 
 type verificationField struct {
@@ -393,5 +394,6 @@ func (e *EventData) ExportCheck() *CheckEventData {
 		SnsFacebook:       e.snsFacebook.getCheckString(),
 		SnsInstagram:      e.snsInstagram.getCheckString(),
 		SnsWebsite:        e.snsWebsite.getCheckString(),
+		ImageComment:      e.ImgStatus,
 	}
 }

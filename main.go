@@ -32,7 +32,7 @@ func processIcons(data []*model.EventData) {
 	drive := model.InitGD()
 	for _, e := range data {
 		//model.PrintError(e)
-		go model.ProcessGD(drive, *e)
+		go model.ProcessGD(drive, e)
 	}
 }
 

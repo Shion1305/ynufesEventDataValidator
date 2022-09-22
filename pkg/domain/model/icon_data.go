@@ -38,8 +38,8 @@ func InitGD() *drive.Service {
 	return d
 }
 
-func ProcessGD(service *drive.Service, e EventData) {
-	path := download(service, e)
+func ProcessGD(service *drive.Service, e *EventData) {
+	path := download(service, *e)
 	if path == "" {
 		return
 	}
@@ -58,9 +58,13 @@ func ProcessGD(service *drive.Service, e EventData) {
 		fmt.Printf("failed to decode image: %s\n", err)
 		return
 	}
-	if img, err = checkImageSize(img); err != nil {
-		fmt.Printf("image requirement not met: %s\n", err)
-		return
+	img, err = checkImageSize(img)
+	if err != nil {
+		if img == nil {
+			fmt.Printf("CRITICAL: error checking size, %s\n", err)
+			return
+		}
+		e.ImgStatus = err.Error()
 	}
 	output1, err := os.Create(path1)
 	if err != nil {
@@ -72,6 +76,9 @@ func ProcessGD(service *drive.Service, e EventData) {
 	if err := webpbin.Encode(output1, img); err != nil {
 		fmt.Printf("writing webp: %s\n", err)
 		return
+	}
+	if e.ImgStatus == "" {
+		e.ImgStatus = "正常です。"
 	}
 	return
 }
@@ -130,7 +137,7 @@ func checkImageSize(target image.Image) (image.Image, error) {
 		return target, nil
 	}
 	if w != h {
-		err = fmt.Errorf("画像が正方形ではありませんでした。画像サイズの変更を行いました。(%d,%d)", w, h)
+		err = fmt.Errorf("画像が正方形でなかったため画像サイズの変更を行いました。(%d,%d)->(500,500)", w, h)
 		fmt.Println(err)
 	}
 	imgData := image.NewRGBA(image.Rect(0, 0, 500, 500))
