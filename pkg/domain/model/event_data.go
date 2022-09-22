@@ -139,7 +139,7 @@ const (
 
 func NewEventData(builder EventDataBuilder) *EventData {
 	var newData EventData
-	newData.eventIdMD5 = genID(builder.OriginOrg)
+	newData.eventIdMD5 = genID(builder.EventOrgName)
 	newData.originOrg = builder.OriginOrg
 	newData.iconDataId = getIconId(builder.IconDataId)
 	newData.eventOrgName = builder.EventOrgName
