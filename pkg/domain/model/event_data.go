@@ -11,12 +11,14 @@ type EventData struct {
 	originOrg         string
 	eventIdMD5        ID
 	iconDataId        string
+	eventOrgName      string
 	eventTitle        string
 	eventSummary      string
+	eventTitleWeb     string
 	eventDescription  string
 	eventDescriptionP string
 	eventGenre        EventGenre
-	orgName           string
+	orgNameWeb        string
 	orgDescription    string
 	snsTwitter        verificationField
 	snsFacebook       verificationField
@@ -51,7 +53,7 @@ func (e *verificationField) setStatus(value string, status Status) {
 }
 
 func (e *verificationField) getSafeValue() string {
-	if e.Status != NG && e.Verified == Verified {
+	if e.Status != NG && e.Verified != Error {
 		return e.Value
 	}
 	return ""
@@ -74,16 +76,19 @@ func (e *verificationField) getCheckString() string {
 type EventField string
 
 const (
-	EventTitle       EventField = "eventTitle"
-	EventDescription EventField = "eventDescription"
-	EventGenreF      EventField = "eventGenre"
-	OrgName          EventField = "orgName"
-	OrgDescription   EventField = "orgDescription"
-	SnsTwitter       EventField = "snsTwitter"
-	SnsFacebook      EventField = "snsFacebook"
-	SnsInstagram     EventField = "snsInstagram"
-	SnsWebsite       EventField = "snsWebsite"
-	ContactAddress   EventField = "contactAddress"
+	OriginOrg         EventField = "originOrg"
+	EventOrgName      EventField = "eventOrgName"
+	EventTitle        EventField = "eventTitle"
+	EventDescription  EventField = "eventDescription"
+	EventDescriptionP EventField = "eventDescriptionP"
+	EventGenreF       EventField = "eventGenre"
+	OrgNameWeb        EventField = "orgNameWeb"
+	OrgDescription    EventField = "orgDescription"
+	SnsTwitter        EventField = "snsTwitter"
+	SnsFacebook       EventField = "snsFacebook"
+	SnsInstagram      EventField = "snsInstagram"
+	SnsWebsite        EventField = "snsWebsite"
+	ContactAddress    EventField = "contactAddress"
 )
 
 type EventGenre string
@@ -133,15 +138,17 @@ const (
 
 func NewEventData(builder EventDataBuilder) *EventData {
 	var newData EventData
-	newData.originOrg = builder.OriginOrg
 	newData.eventIdMD5 = genID(builder.OriginOrg)
+	newData.originOrg = builder.OriginOrg
 	newData.iconDataId = getIconId(builder.IconDataId)
+	newData.eventOrgName = builder.EventOrgName
 	newData.eventTitle = builder.EventTitle
 	newData.eventSummary = builder.EventSummary
+	newData.eventTitleWeb = builder.EventTitleWeb
+	newData.orgNameWeb = builder.OrgNameWeb
 	newData.eventDescription = builder.EventDescription
 	newData.eventDescriptionP = builder.EventDescriptionP
 	newData.eventGenre = EventGenre(builder.EventGenreText)
-	newData.orgName = builder.OrgName
 	newData.orgDescription = builder.OrgDescription
 	newData.snsTwitter = initVerificationField(builder.SnsTwitter)
 	newData.snsFacebook = initVerificationField(builder.SnsFacebook)
@@ -180,11 +187,17 @@ func (e *EventData) UpdateField(field EventField, value string) error {
 	case EventGenreF:
 		e.eventGenre = EventGenre(value)
 		break
-	case OrgName:
-		e.orgName = value
+	case EventOrgName:
+		e.eventOrgName = value
+		break
+	case OriginOrg:
+		e.originOrg = value
 		break
 	case OrgDescription:
 		e.orgDescription = value
+		break
+	case EventDescriptionP:
+		e.eventDescriptionP = value
 		break
 	case SnsTwitter:
 		e.snsTwitter.Value = value
@@ -215,12 +228,9 @@ func (e *EventData) validate() {
 	//_, s1 := e.validateOrgName()
 	//_, s1 := e.validateOrgDescription()
 	e.ValidateSnsTwitter()
-	//_, s1 := e.validateSnsInstagram()
-	//_, s1 := e.validateSnsFacebook()
-	//_, s2 := e.validateSnsWebsite()
-	//if s2 == NG {
-	//	fmt.Println(e.snsWebsite)
-	//}
+	e.validateSnsInstagram()
+	e.validateSnsFacebook()
+	e.validateSnsWebsite()
 }
 
 func validAsID(s string) string {
@@ -345,46 +355,18 @@ func accessTest(url string) bool {
 	return true
 }
 
-// ExportEventData WEB用のExporter 必要のないデータは含まない
-type ExportEventData struct {
-	EventIdMD5       string `json:"event_id"`
-	EventTitle       string `json:"event_title"`
-	EventSummary     string `json:"event_summary"`
-	EventDescription string `json:"event_description"`
-	EventGenreId     int    `json:"event_genre_id"`
-	OrgName          string `json:"org_name"`
-	OrgDescription   string `json:"org_description"`
-	SnsTwitter       string `json:"sns_twitter"`
-	SnsFacebook      string `json:"sns_facebook"`
-	SnsInstagram     string `json:"sns_instagram"`
-	SnsWebsite       string `json:"sns_website"`
-}
-
-func (e *EventData) Export() ExportEventData {
-	return ExportEventData{
-		EventIdMD5:       string(e.eventIdMD5),
-		EventTitle:       e.eventTitle,
-		EventDescription: e.eventDescription,
-		EventGenreId:     e.eventGenre.getEventGenreId(),
-		OrgName:          e.orgName,
-		OrgDescription:   e.orgDescription,
-		SnsTwitter:       e.snsTwitter.getSafeValue(),
-		SnsFacebook:      e.snsFacebook.getSafeValue(),
-		SnsInstagram:     e.snsInstagram.getSafeValue(),
-		SnsWebsite:       e.snsWebsite.getSafeValue(),
-	}
-}
-
 type CheckEventData struct {
 	OriginOrg         string `csv:"OriginOrg"`
 	ContactAddress    string `csv:"ContactAddress"`
 	Url               string `csv:"Url"`
+	EventOrgName      string `csv:"eventOrgName"`
 	EventTitle        string `csv:"eventTitle"`
 	EventSummary      string `csv:"eventSummary"`
+	EventTitleWeb     string `csv:"eventTitleWeb"`
 	EventDescription  string `csv:"eventDescription"`
 	EventDescriptionP string `csv:"eventDescriptionP"`
 	EventGenreText    string `csv:"eventGenreText"`
-	OrgName           string `csv:"orgName"`
+	OrgNameWeb        string `csv:"orgNameWeb"`
 	OrgDescription    string `csv:"orgDescription"`
 	SnsTwitter        string `csv:"snsTwitter"`
 	SnsFacebook       string `csv:"snsFacebook"`
@@ -398,12 +380,14 @@ func (e *EventData) ExportCheck() *CheckEventData {
 		OriginOrg:         e.originOrg,
 		ContactAddress:    e.contactAddress,
 		Url:               "https://tokiwa22.ynu-fes.yokohama/preview/event-detail/" + string(e.eventIdMD5),
+		EventOrgName:      e.eventOrgName,
 		EventTitle:        e.eventTitle,
 		EventSummary:      e.eventSummary,
+		EventTitleWeb:     e.eventTitleWeb,
 		EventDescription:  e.eventDescription,
 		EventDescriptionP: e.eventDescriptionP,
 		EventGenreText:    string(e.eventGenre),
-		OrgName:           e.orgName,
+		OrgNameWeb:        e.orgNameWeb,
 		OrgDescription:    e.orgDescription,
 		SnsTwitter:        e.snsTwitter.getCheckString(),
 		SnsFacebook:       e.snsFacebook.getCheckString(),

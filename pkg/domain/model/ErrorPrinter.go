@@ -44,7 +44,7 @@ func PrintError(event *EventData) {
 
 func printHeader(hasError *bool, event EventData) {
 	if !*hasError {
-		fmt.Printf("%30sの%30sについて以下のエラーがあります。\n", event.orgName, event.eventTitle)
+		fmt.Printf("%30sの%30sについて以下のエラーがあります。\n", event.eventOrgName, event.eventTitle)
 		*hasError = true
 	}
 }
