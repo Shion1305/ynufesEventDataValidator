@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"time"
 	"ynufesEventDataValidator/pkg/domain/model"
 )
 
@@ -24,6 +25,7 @@ func main() {
 	//checkPatches(eventDataSet)
 	model.ValidateTwitter(eventDataSet)
 	processIcons(eventDataSet)
+	time.Sleep(time.Second * 50)
 	exportCSV(eventDataSet)
 	exportJson(eventDataSet)
 }
