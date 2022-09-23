@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"time"
+	"sync"
 	"ynufesEventDataValidator/pkg/domain/model"
 )
 
@@ -25,17 +25,21 @@ func main() {
 	//checkPatches(eventDataSet)
 	model.ValidateTwitter(eventDataSet)
 	processIcons(eventDataSet)
-	time.Sleep(time.Second * 50)
 	exportCSV(eventDataSet)
 	exportJson(eventDataSet)
 }
 
 func processIcons(data []*model.EventData) {
 	drive := model.InitGD()
+	var wg sync.WaitGroup
 	for _, e := range data {
-		//model.PrintError(e)
-		go model.ProcessGD(drive, e)
+		wg.Add(1)
+		go func(e *model.EventData) {
+			model.ProcessGD(drive, e)
+			wg.Done()
+		}(e)
 	}
+	wg.Wait()
 }
 
 func exportJson(data []*model.EventData) error {
